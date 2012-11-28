@@ -10,3 +10,6 @@ git push -u origin master
 //Push an existing repository from the command line
 git remote add origin https://github.com/xartifex/project-calculator.git
 git push -u origin master
+
+
+mvn install:install-file -DgroupId=com.vertx -DartifactId=vertx-core -Dversion=1.2.2 -Dfile=PATH_TO_VERTX_JARS/vertx-core-1.2.2.final.jar -Dpackaging=jar -DgeneratePom=true -DlocalRepositoryPath=./repository

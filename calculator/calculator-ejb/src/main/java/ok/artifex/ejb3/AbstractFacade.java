@@ -13,7 +13,7 @@ public abstract class AbstractFacade<T>
 
     public AbstractFacade(Class<T> entityClass)
     {
-        this.entityClass = entityClass;
+        this.entityClass = entityClass;        
     }
 
     protected abstract EntityManager getEntityManager();

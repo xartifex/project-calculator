@@ -9,6 +9,9 @@
   <modules>
     <module>calculator-ear</module>
     <module>calculator-web</module>
-    <module>calculator-ejb</module>
+    <module>calculator-ejb</module>    
   </modules>
+    <properties>
+        <netbeans.hint.deploy.server>WebLogic9</netbeans.hint.deploy.server>
+    </properties>
 </project>

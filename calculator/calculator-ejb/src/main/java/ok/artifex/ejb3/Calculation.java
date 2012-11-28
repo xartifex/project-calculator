@@ -21,11 +21,23 @@ public class Calculation implements Serializable
     private Long id;
    
     private BigDecimal a;
-    private BigDecimal b;    
-    private MathOperation op;
+    private BigDecimal b; 
+    private BigDecimal result;
+   
+    private String mathOperation;
 
     public Calculation()
     {        
+    }
+    
+    public BigDecimal getResult()
+    {
+        return result;
+    }
+
+    public void setResult(BigDecimal result)
+    {
+        this.result = result;
     }
 
     public BigDecimal getA()
@@ -48,14 +60,14 @@ public class Calculation implements Serializable
         this.b = b;
     }
 
-    public MathOperation getOp()
+    public String getOp()
     {
-        return op;
+        return mathOperation;
     }
 
-    public void setOp(MathOperation op)
+    public void setOp(String mathOperation)
     {
-        this.op = op;
+        this.mathOperation = mathOperation;
     }        
         
     public Long getId()
@@ -67,6 +79,7 @@ public class Calculation implements Serializable
     {
         this.id = id;
     }    
+        
 
     @Override
     public int hashCode()
@@ -97,5 +110,4 @@ public class Calculation implements Serializable
     {
         return "ok.artifex.ejb3.MathOperation[ id=" + id + " ]";
     }
-    
 }

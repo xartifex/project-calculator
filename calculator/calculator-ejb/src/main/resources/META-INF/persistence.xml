@@ -4,8 +4,8 @@
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <jta-data-source>jdbc/DataSource-0</jta-data-source>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
-<!--    <properties>
-      <property name="eclipselink.ddl-generation" value="create-tables"/>
-    </properties>-->
+    <properties>
+      <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+    </properties>
   </persistence-unit>
 </persistence>
