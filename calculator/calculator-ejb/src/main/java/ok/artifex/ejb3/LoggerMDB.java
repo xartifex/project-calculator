@@ -41,7 +41,7 @@ public class LoggerMDB implements MessageListener
                 Logger.getLogger(LoggerMDB.class.getName()).log(Level.INFO, 
                         "new calculation has been performed: " + calculation.getA() 
                         + " " + calculation.getOp()  + " " + calculation.getB() 
-                        + " = " + calculation.getResult(), 
+                        + " = " + calculation.getCalcres(), 
                         new Object[0]);
             }
             catch (JMSException ex)

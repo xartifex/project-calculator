@@ -1,8 +1,17 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package ok.artifex.web;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
@@ -22,11 +31,11 @@ import ok.artifex.ejb3.CalculationFacade;
  *
  * @author Administrator
  */
-@WebServlet(name = "FixedSum", urlPatterns =
+@WebServlet(name = "CalcDecimal", urlPatterns =
 {
-    "/FixedSum"
+    "/dec"
 })
-public class FixedSum extends HttpServlet
+public class CalcDecimal extends HttpServlet
 {
 
     @EJB
@@ -99,31 +108,18 @@ public class FixedSum extends HttpServlet
                 }
             }
         }
-    }    
-/*
-    interface Closable
-    {
-
-        void close() throws JMSException;
     }
 
-    private void close(Closable closable)
+    private static final HashMap<String, MathOperation> opToOp = new HashMap<String, MathOperation>();
+    static
     {
-        if (closable != null)
-        {
-            try
-            {
-                closable.close();
-            }
-            catch (JMSException ex)
-            {
-                Logger.getLogger(FixedSum.class.getName()).log(Level.SEVERE, null, ex);
-                throw new RuntimeException(ex);
-            }
-        }
-    }   
- */
-
+        opToOp.put("+", MathOperation.ADD);
+        opToOp.put("/", MathOperation.DIVIDE);
+        opToOp.put("*", MathOperation.MULTIPLY);
+        opToOp.put("-", MathOperation.SUBTRACT);
+    }
+    
+    
     /**
      * Processes requests for both HTTP
      * <code>GET</code> and
@@ -137,70 +133,73 @@ public class FixedSum extends HttpServlet
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        try
+        BufferedReader input = new BufferedReader(new InputStreamReader(request.getInputStream()));
+        String inputLine;
+        StringBuilder sb = new StringBuilder();
+        while ((inputLine = input.readLine()) != null)
         {
-            String a = request.getParameter("a");
-            String b = request.getParameter("b");
-
-            BigDecimal bA = null;
-            BigDecimal bB = null;
-
-            if (a != null && b != null)
+            sb.append(inputLine);
+        }
+        String strResponse = sb.toString();
+        Scanner scanner = new Scanner(strResponse);
+        scanner.useDelimiter(";");
+        Map<String, String> keyValueMap = new HashMap<String, String>();
+        while (scanner.hasNext())
+        {
+            String keyValue = scanner.next();
+            String[] keyAndValue = keyValue.split("=");
+            if (keyAndValue.length > 1)
             {
+                keyValueMap.put(keyAndValue[0], keyAndValue[1]);
+            }
+        }
+
+        String a = keyValueMap.get("a");
+        String b = keyValueMap.get("b");
+        String operation = keyValueMap.get("op");        
+        
+        MathOperation mathOperation = opToOp.get(operation);
+        if(mathOperation == null)
+        {
+            throw new RuntimeException("Invalid operation supplied: " + operation);
+        }
+        
+        BigDecimal bA = null;
+        BigDecimal bB = null;
+
+        if (a != null && b != null)
+        {
+            try
+            {            
                 bA = new BigDecimal(a);
                 bB = new BigDecimal(b);
             }
-
-            BigDecimal result = null;
-            if (bA != null && bB != null)
-            {
-                result = calculateDecimal.calculate(bA, bB, MathOperation.ADD);
-                Calculation calculation = new Calculation();
-                calculation.setA(bA);
-                calculation.setB(bB);
-                calculation.setOp(MathOperation.ADD.toString());
-                calculation.setCalcres(result);
-                calculationFacade.create(calculation);
-                asyncLog(calculation);                
+            catch(NumberFormatException e)
+            {                
+                Logger.getLogger(FixedSum.class.getName()).log(Level.SEVERE, a + " " + b, e);
+                throw new RuntimeException(e);
             }
-
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet FixedSum</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet FixedSum at " + request.getContextPath() + "</h1>");
-
-            out.println("</br>Servlet sums two numbers");
-            out.println("<form>");
-            out.println("A: <input type='text' name='a' value='" + getValue(a) + "'><br/>");
-            out.println("B: <input type='text' name='b' value='" + getValue(b) + "'><br/>");
-            out.println("<input type='submit'><br/>");
-            out.println("</form>");
-            out.println("<br>result: " + result);
-
-            out.println("</body>");
-            out.println("</html>");
         }
-        catch (NumberFormatException e)
+
+        BigDecimal result = null;
+        if (bA != null && bB != null)
         {
-            response.sendRedirect(request.getContextPath() + "/FixedSum");
-            throw new RuntimeException(e);
-        }
-        finally
-        {  
-            out.close();
+            result = calculateDecimal.calculate(bA, bB, mathOperation);
+            Calculation calculation = new Calculation();
+            calculation.setA(bA);
+            calculation.setB(bB);
+            calculation.setOp(mathOperation.toString());
+            calculation.setCalcres(result);
+            calculationFacade.create(calculation);
+            asyncLog(calculation);
+            
+            PrintWriter printWriter = new PrintWriter(response.getOutputStream());
+            printWriter.print("{\"result\":" +  result.toString() + "}");
+            printWriter.flush();
         }
     }
 
-    private String getValue(String str)
-    {
-        return str == null ? "" : str;
-    }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP
      * <code>GET</code> method.
@@ -241,6 +240,6 @@ public class FixedSum extends HttpServlet
     @Override
     public String getServletInfo()
     {
-        return "Sum two numbers";
+        return "simple web calculator";
     }// </editor-fold>
 }

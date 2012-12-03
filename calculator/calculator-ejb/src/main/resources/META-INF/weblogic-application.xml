@@ -1,0 +1,11 @@
+<target name="package" depends="prepare">
+    <jar destfile="dist/${ant.project.name}.ear">
+        <metainf dir="etc" includes="*.xml"/>
+        <manifest>
+            <attribute name="Extension-Name" value="eclipselink"/>
+            <attribute name="Specification-Version" value="2.0"/>
+            <attribute name="Implementation-Version" value="2.2.0"/>
+        </manifest>
+        <fileset dir="build" includes="**/*"/>
+    </jar>       
+</target>

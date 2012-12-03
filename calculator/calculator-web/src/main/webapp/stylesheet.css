@@ -1,0 +1,21 @@
+table
+{
+	margin: auto;
+	border: 1px solid black;
+	background: #85FF85;	
+}
+
+
+.result
+{
+	text-align: right;
+	border-width: 1px;
+	border-style: inset;
+	padding: 0px 2px 0px 0px;
+}
+
+.button
+{
+	margin: auto;
+	width: 100%;
+}

@@ -2,11 +2,7 @@ package ok.artifex.ejb3;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import ok.artifex.calculatorlib.MathOperation;
+import javax.persistence.*;
 
 /**
  *
@@ -17,12 +13,13 @@ public class Calculation implements Serializable
 {
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BASE_SEQ")
+    @SequenceGenerator(name="BASE_SEQ",sequenceName="BASE_SEQ")    
     private Long id;
    
     private BigDecimal a;
     private BigDecimal b; 
-    private BigDecimal result;
+    private BigDecimal calcres;
    
     private String mathOperation;
 
@@ -30,14 +27,14 @@ public class Calculation implements Serializable
     {        
     }
     
-    public BigDecimal getResult()
+    public BigDecimal getCalcres()
     {
-        return result;
+        return calcres;
     }
 
-    public void setResult(BigDecimal result)
+    public void setCalcres(BigDecimal calcres)
     {
-        this.result = result;
+        this.calcres = calcres;
     }
 
     public BigDecimal getA()
